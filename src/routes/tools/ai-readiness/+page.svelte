@@ -1,9 +1,9 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
+	import { PUBLIC_HUBSPOT_PORTAL_ID, PUBLIC_HUBSPOT_FORM_GUID } from '$env/static/public';
 
-	// HubSpot form config — update portalId and formGuid after creating the form in HubSpot
-	const HUBSPOT_PORTAL_ID = '00000000';
-	const HUBSPOT_FORM_GUID = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
+	const HUBSPOT_PORTAL_ID = PUBLIC_HUBSPOT_PORTAL_ID;
+	const HUBSPOT_FORM_GUID = PUBLIC_HUBSPOT_FORM_GUID;
 
 	const questions: { id: number; category: string; text: string }[] = [
 		// Data & Infrastructure (4 questions)
