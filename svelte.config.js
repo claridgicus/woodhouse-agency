@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-static';
+import adapter from '@sveltejs/adapter-auto';
 import { mdsvex } from 'mdsvex';
 import { fileURLToPath } from 'node:url';
 
@@ -18,17 +18,11 @@ const config = {
 		})
 	],
 	kit: {
-		adapter: adapter({
-			pages: 'build',
-			assets: 'build',
-			fallback: undefined,
-			precompress: false,
-			strict: true
-		}),
+		adapter: adapter(),
 		prerender: {
 			handleHttpError: 'warn',
 			handleUnseenRoutes: 'warn',
-			entries: ['*', '/robots.txt', '/sitemap.xml', '/llms.txt']
+			entries: ['*', '/robots.txt', '/sitemap.xml']
 		}
 	}
 };

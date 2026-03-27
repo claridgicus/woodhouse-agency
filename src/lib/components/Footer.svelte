@@ -28,8 +28,7 @@
 				<li><a href="/case-studies" class="hover:text-white transition-colors">Case Studies</a></li>
 				<li><a href="/lp/roi-calculator" class="hover:text-white transition-colors">ROI Calculator</a></li>
 				<li><a href="/lp/get-started" class="hover:text-white transition-colors">Get Started</a></li>
-				<li><a href="/llms.txt" class="hover:text-white transition-colors">llms.txt</a></li>
-			</ul>
+				</ul>
 		</div>
 	</div>
 
@@ -37,8 +36,6 @@
 		<div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500">
 			<p>© {new Date().getFullYear()} {SITE.name}. All rights reserved.</p>
 			<div class="flex gap-4">
-				<a href="/privacy" class="hover:text-gray-300">Privacy</a>
-				<a href="/terms" class="hover:text-gray-300">Terms</a>
 				<a href="/sitemap.xml" class="hover:text-gray-300">Sitemap</a>
 			</div>
 		</div>
