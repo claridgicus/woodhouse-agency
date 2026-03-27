@@ -1,9 +1,5 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
-	import { PUBLIC_HUBSPOT_PORTAL_ID, PUBLIC_HUBSPOT_ROI_FORM_GUID } from '$env/static/public';
-
-	const HUBSPOT_PORTAL_ID = PUBLIC_HUBSPOT_PORTAL_ID;
-	const HUBSPOT_FORM_GUID = PUBLIC_HUBSPOT_ROI_FORM_GUID;
 
 	// Inputs
 	let headcount = $state(50);
@@ -57,29 +53,9 @@
 		}
 		emailSubmitting = true;
 		try {
-			const res = await fetch(
-				`https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_GUID}`,
-				{
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						fields: [
-							{ name: 'firstname', value: firstName },
-							{ name: 'email', value: email },
-							{ name: 'company', value: company },
-							{ name: 'roi_3yr', value: String(roi3yr) },
-							{ name: 'annual_savings', value: String(Math.round(annualTimeSavings)) }
-						],
-						context: { pageUri: window.location.href, pageName: 'ROI Calculator' }
-					})
-				}
-			);
-			if (!res.ok) throw new Error('Submission failed');
 			emailSubmitted = true;
 			showEmailGate = false;
 			await generatePdf();
-		} catch {
-			emailError = 'Something went wrong. Please try again.';
 		} finally {
 			emailSubmitting = false;
 		}

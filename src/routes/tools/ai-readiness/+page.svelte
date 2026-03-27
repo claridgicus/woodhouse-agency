@@ -1,9 +1,5 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
-	import { PUBLIC_HUBSPOT_PORTAL_ID, PUBLIC_HUBSPOT_FORM_GUID } from '$env/static/public';
-
-	const HUBSPOT_PORTAL_ID = PUBLIC_HUBSPOT_PORTAL_ID;
-	const HUBSPOT_FORM_GUID = PUBLIC_HUBSPOT_FORM_GUID;
 
 	const questions: { id: number; category: string; text: string }[] = [
 		// Data & Infrastructure (4 questions)
@@ -111,27 +107,8 @@
 		}
 		emailSubmitting = true;
 		try {
-			const res = await fetch(
-				`https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_GUID}`,
-				{
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						fields: [
-							{ name: 'firstname', value: firstName },
-							{ name: 'email', value: email },
-							{ name: 'company', value: company },
-							{ name: 'ai_readiness_score', value: String(percentScore) }
-						],
-						context: { pageUri: window.location.href, pageName: 'AI Readiness Assessment' }
-					})
-				}
-			);
-			if (!res.ok) throw new Error('Submission failed');
 			emailSubmitted = true;
 			await generatePdf();
-		} catch {
-			emailError = 'Something went wrong. Please try again.';
 		} finally {
 			emailSubmitting = false;
 		}
