@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
+	import { SITE } from '$lib/site';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -42,7 +43,7 @@
 		<p class="text-gray-500 mb-6 max-w-lg mx-auto">
 			If you're a technology provider or consultancy serving enterprise clients, we'd love to explore how we can deliver better outcomes together.
 		</p>
-		<a href="mailto:partners@wooagency.com" class="px-8 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition-colors inline-block">
+		<a href="mailto:{SITE.partnersEmail}" class="px-8 py-3 bg-brand-600 text-white font-semibold rounded-xl hover:bg-brand-700 transition-colors inline-block">
 			Get in Touch
 		</a>
 	</div>

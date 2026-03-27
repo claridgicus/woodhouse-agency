@@ -14,8 +14,19 @@
 
 <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-100">
 	<nav class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
-		<a href="/" class="font-bold text-xl text-gray-900 hover:text-brand-600 transition-colors">
-			{SITE.name}
+		<a href="/" class="flex items-center gap-2.5 group" aria-label="{SITE.name} home">
+			<!-- Multiplier Mark logo -->
+			<svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+				<rect width="32" height="32" rx="6" fill="#0d1b2a"/>
+				<line x1="8" y1="22" x2="16" y2="14" stroke="#4f46e5" stroke-width="2" stroke-linecap="round"/>
+				<line x1="16" y1="14" x2="24" y2="7" stroke="#4f46e5" stroke-width="2" stroke-linecap="round"/>
+				<circle cx="8" cy="22" r="3" fill="#818cf8"/>
+				<circle cx="16" cy="14" r="3" fill="#4f46e5"/>
+				<circle cx="24" cy="7" r="3.5" fill="white"/>
+			</svg>
+			<span class="font-bold text-lg text-gray-900 group-hover:text-brand-600 transition-colors">
+				{SITE.name}
+			</span>
 		</a>
 
 		<!-- Desktop nav -->

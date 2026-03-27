@@ -1,12 +1,29 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-50: #f0f4ff;
-  --color-brand-100: #e0e9ff;
-  --color-brand-500: #4f6ef7;
-  --color-brand-600: #3b5be6;
-  --color-brand-700: #2946c4;
-  --color-brand-900: #1a2f8f;
+  /* Woodhouse Brand Colours
+   * Navy (#0D1B2A)  — headers, footer backgrounds, hero gradients
+   * Indigo (#4F46E5) — CTAs, active states, accent highlights
+   * Slate (#334155)  — body text, secondary headings
+   */
+
+  /* brand scale: light indigo → Woodhouse Indigo → Woodhouse Navy */
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #4f46e5;   /* Woodhouse Indigo */
+  --color-brand-600: #4338ca;
+  --color-brand-700: #3730a3;
+  --color-brand-800: #312e81;
+  --color-brand-900: #0d1b2a;   /* Woodhouse Navy */
+
+  /* Semantic colours */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
