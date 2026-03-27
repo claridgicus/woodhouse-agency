@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Woodhouse — Admin Dashboard Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 14px; -webkit-font-smoothing: antialiased; }
+    body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; background: #f8fafc; color: #334155; }
+
+    /* ─── Brand Tokens ─────────────────────────────────── */
+    :root {
+      --navy:    #0d1b2a;
+      --indigo:  #4f46e5;
+      --indigo-h:#4338ca;
+      --slate:   #334155;
+      --gray-50: #f8fafc;
+      --gray-100:#f1f5f9;
+      --gray-200:#e2e8f0;
+      --gray-300:#cbd5e1;
+      --gray-400:#94a3b8;
+      --gray-500:#64748b;
+      --gray-600:#475569;
+      --gray-700:#334155;
+      --gray-800:#1e293b;
+      --gray-900:#0f172a;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error:   #ef4444;
+      --info:    #3b82f6;
+      --sidebar-w: 224px;
+    }
+
+    /* ─── Layout Shell ─────────────────────────────────── */
+    .app { display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* Top Bar */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 56px;
+      background: white;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex; align-items: center; padding: 0 20px;
+      gap: 12px;
+    }
+    .topbar-logo {
+      display: flex; align-items: center; gap: 8px;
+      font-weight: 700; font-size: 15px; color: var(--gray-900);
+      text-decoration: none;
+    }
+    .topbar-logo svg { flex-shrink: 0; }
+    .topbar-sep { width: 1px; height: 20px; background: var(--gray-200); margin: 0 4px; }
+    .breadcrumb { font-size: 13px; color: var(--gray-500); display: flex; align-items: center; gap: 6px; }
+    .breadcrumb a { color: var(--gray-500); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--gray-800); }
+    .breadcrumb .sep { color: var(--gray-300); }
+    .breadcrumb .current { color: var(--gray-800); font-weight: 500; }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--indigo); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+
+    /* Body below topbar */
+    .body { display: flex; padding-top: 56px; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed; left: 0; top: 56px; bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--navy);
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+      z-index: 50;
+    }
+    .sidebar-section { padding: 16px 0 8px; }
+    .sidebar-label {
+      padding: 0 16px 6px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+      color: #4e6a86; text-transform: uppercase;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 16px;
+      font-size: 13.5px; font-weight: 500;
+      color: #8ba7c4;
+      text-decoration: none;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+    }
+    .nav-item:hover { color: #c8d8e8; background: rgba(255,255,255,0.04); }
+    .nav-item.active {
+      color: white; background: rgba(79,70,229,0.15);
+      border-left-color: var(--indigo);
+    }
+    .nav-item svg { flex-shrink: 0; width: 16px; height: 16px; }
+    .nav-cta {
+      color: #a5b4fc !important;
+    }
+    .nav-cta.active, .nav-cta:hover { color: white !important; }
+
+    .sidebar-bottom { margin-top: auto; border-top: 1px solid #1a2d40; padding: 8px 0; }
+
+    /* Main Content */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 24px;
+      max-width: 100%;
+    }
+
+    /* ─── Page Header ──────────────────────────────────── */
+    .page-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .page-title { font-size: 20px; font-weight: 700; color: var(--gray-900); }
+    .page-subtitle { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+
+    /* ─── Buttons ──────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 7px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      border: 1px solid transparent; transition: all 0.15s;
+      text-decoration: none; white-space: nowrap;
+    }
+    .btn-primary { background: var(--indigo); color: white; border-color: var(--indigo); }
+    .btn-primary:hover { background: var(--indigo-h); border-color: var(--indigo-h); }
+    .btn-outline { background: white; color: var(--gray-700); border-color: var(--gray-200); }
+    .btn-outline:hover { border-color: var(--gray-300); background: var(--gray-50); }
+    .btn-ghost { background: transparent; color: var(--gray-600); border: none; }
+    .btn-ghost:hover { background: var(--gray-100); }
+    .btn-danger { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+    /* ─── Filter Bar ───────────────────────────────────── */
+    .filter-bar {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 16px; flex-wrap: wrap;
+    }
+    .filter-select {
+      appearance: none; padding: 6px 28px 6px 10px;
+      border: 1px solid var(--gray-200); border-radius: 7px;
+      background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;
+      font-size: 13px; color: var(--gray-700); cursor: pointer;
+      font-family: inherit;
+    }
+    .filter-select:focus { outline: 2px solid var(--indigo); outline-offset: 1px; border-color: var(--indigo); }
+    .search-input {
+      padding: 6px 10px 6px 32px;
+      border: 1px solid var(--gray-200); border-radius: 7px;
+      background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat left 10px center;
+      font-size: 13px; color: var(--gray-700); width: 220px;
+      font-family: inherit;
+    }
+    .search-input:focus { outline: 2px solid var(--indigo); outline-offset: 1px; border-color: var(--indigo); }
+    .filter-spacer { flex: 1; }
+
+    /* ─── Data Table ───────────────────────────────────── */
+    .table-card {
+      background: white; border: 1px solid var(--gray-200);
+      border-radius: 10px; overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    thead th {
+      padding: 10px 14px;
+      text-align: left; font-size: 12px; font-weight: 600;
+      color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.04em;
+      background: var(--gray-50); border-bottom: 1px solid var(--gray-200);
+      white-space: nowrap; cursor: pointer; user-select: none;
+    }
+    thead th:hover { color: var(--gray-800); }
+    thead th .sort-icon { margin-left: 4px; opacity: 0.4; }
+    thead th.sorted .sort-icon { opacity: 1; color: var(--indigo); }
+    tbody tr { border-bottom: 1px solid var(--gray-100); cursor: pointer; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #f8faff; }
+    tbody td { padding: 11px 14px; color: var(--gray-700); vertical-align: middle; }
+    td.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+    td.muted { color: var(--gray-400); }
+
+    /* Checkbox */
+    .cb { width: 15px; height: 15px; cursor: pointer; accent-color: var(--indigo); }
+
+    /* Pagination */
+    .pagination {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px;
+      border-top: 1px solid var(--gray-100);
+      font-size: 13px; color: var(--gray-500);
+    }
+    .pagination-pages { display: flex; align-items: center; gap: 4px; }
+    .page-btn {
+      width: 30px; height: 30px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      border: 1px solid transparent; color: var(--gray-600);
+    }
+    .page-btn:hover { background: var(--gray-100); }
+    .page-btn.active { background: var(--indigo); color: white; border-color: var(--indigo); }
+
+    /* ─── Status Badges ────────────────────────────────── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 8px; border-radius: 20px;
+      font-size: 12px; font-weight: 500; white-space: nowrap;
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .badge-running  { background: #dcfce7; color: #166534; }
+    .badge-running .badge-dot  { background: var(--success); animation: pulse 1.5s infinite; }
+    .badge-done     { background: var(--gray-100); color: var(--gray-600); }
+    .badge-done .badge-dot     { background: var(--gray-400); }
+    .badge-failed   { background: #fef2f2; color: #991b1b; }
+    .badge-failed .badge-dot   { background: var(--error); }
+    .badge-queued   { background: #fef3c7; color: #92400e; }
+    .badge-queued .badge-dot   { background: var(--warning); }
+    .badge-cancelled{ background: var(--gray-100); color: var(--gray-400); }
+    .badge-active   { background: #dcfce7; color: #166534; }
+    .badge-inactive { background: var(--gray-100); color: var(--gray-500); }
+    .badge-model    { background: #ede9fe; color: #5b21b6; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ─── Cards ────────────────────────────────────────── */
+    .card {
+      background: white; border: 1px solid var(--gray-200);
+      border-radius: 10px; padding: 20px;
+    }
+    .card-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .card-title { font-size: 15px; font-weight: 600; color: var(--gray-900); }
+    .card-subtitle { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+
+    /* Agent Cards */
+    .agent-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .agent-card {
+      background: white; border: 1px solid var(--gray-200);
+      border-radius: 10px; padding: 18px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      cursor: pointer;
+    }
+    .agent-card:hover { border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(79,70,229,0.08); }
+    .agent-card-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+    .agent-name { font-size: 15px; font-weight: 700; color: var(--gray-900); }
+    .agent-role { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+    .agent-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .tool-chip {
+      display: inline-block; padding: 2px 7px;
+      background: var(--gray-100); color: var(--gray-600);
+      border-radius: 4px; font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .agent-card-footer { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--gray-100); display: flex; justify-content: flex-end; }
+
+    /* Metric Cards */
+    .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .metric-card {
+      background: white; border: 1px solid var(--gray-200);
+      border-radius: 10px; padding: 16px 20px;
+    }
+    .metric-label { font-size: 12px; font-weight: 500; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.05em; }
+    .metric-value { font-size: 28px; font-weight: 700; color: var(--gray-900); margin-top: 4px; line-height: 1; }
+    .metric-delta { font-size: 12px; font-weight: 500; margin-top: 4px; }
+    .delta-up { color: var(--success); }
+    .delta-down { color: var(--error); }
+
+    /* ─── Workflow Detail ──────────────────────────────── */
+    .detail-header {
+      background: white; border: 1px solid var(--gray-200);
+      border-radius: 10px; padding: 18px 20px;
+      margin-bottom: 20px;
+    }
+    .detail-title-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .detail-title { font-size: 18px; font-weight: 700; color: var(--gray-900); }
+    .detail-meta { display: flex; gap: 20px; font-size: 13px; color: var(--gray-500); flex-wrap: wrap; }
+    .detail-meta-item { display: flex; align-items: center; gap: 5px; }
+    .detail-meta-item strong { color: var(--gray-700); font-weight: 500; }
+
+    .detail-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; }
+
+    /* Step Trace */
+    .step-trace { background: white; border: 1px solid var(--gray-200); border-radius: 10px; padding: 16px; }
+    .step-trace-title { font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .step-list { display: flex; flex-direction: column; gap: 0; }
+    .step-item { display: flex; gap: 10px; position: relative; }
+    .step-item:not(:last-child) .step-icon-wrap::after {
+      content: ''; position: absolute; left: 12px; top: 26px;
+      width: 1px; height: calc(100% - 8px);
+      background: var(--gray-200);
+    }
+    .step-icon-wrap { position: relative; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
+    .step-icon {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; flex-shrink: 0; z-index: 1;
+    }
+    .step-icon.done { background: #dcfce7; color: var(--success); }
+    .step-icon.active { background: var(--indigo); color: white; animation: pulse-ring 1.5s infinite; }
+    .step-icon.pending { background: var(--gray-100); color: var(--gray-400); }
+    .step-icon.failed { background: #fef2f2; color: var(--error); }
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(79,70,229,0.4); }
+      70% { box-shadow: 0 0 0 6px rgba(79,70,229,0); }
+      100% { box-shadow: 0 0 0 0 rgba(79,70,229,0); }
+    }
+    .step-content { padding: 2px 0 16px; flex: 1; }
+    .step-label { font-size: 13px; font-weight: 500; color: var(--gray-800); }
+    .step-label.pending { color: var(--gray-400); }
+    .step-time { font-size: 11px; color: var(--gray-400); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+    .step-sub { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
+    .step-sub-item { font-size: 11.5px; color: var(--gray-500); display: flex; align-items: center; gap: 5px; }
+    .step-sub-item::before { content: '↳'; color: var(--gray-300); }
+
+    /* Activity Feed */
+    .activity-feed { background: var(--gray-900); border: 1px solid var(--gray-800); border-radius: 10px; display: flex; flex-direction: column; }
+    .feed-header {
+      padding: 10px 14px; border-bottom: 1px solid #1e293b;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .feed-title { font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+    .feed-controls { display: flex; align-items: center; gap: 10px; }
+    .feed-ws-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); animation: pulse 1.5s infinite; }
+    .feed-ws-label { font-size: 11px; color: #64748b; }
+    .feed-toggle { font-size: 11px; color: #64748b; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .feed-toggle:hover { color: #94a3b8; }
+    .feed-body { padding: 12px 14px; height: 380px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.7; }
+    .feed-body::-webkit-scrollbar { width: 4px; }
+    .feed-body::-webkit-scrollbar-track { background: transparent; }
+    .feed-body::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 2px; }
+    .feed-line { display: flex; gap: 12px; }
+    .feed-ts { color: #475569; flex-shrink: 0; width: 80px; }
+    .feed-msg { flex: 1; }
+    .feed-tool { color: #60a5fa; }
+    .feed-llm  { color: #34d399; }
+    .feed-err  { color: #f87171; }
+    .feed-info { color: #94a3b8; }
+    .feed-arg  { color: #a78bfa; padding-left: 20px; }
+    .feed-thinking { color: #f59e0b; }
+
+    /* ─── Run Form ─────────────────────────────────────── */
+    .run-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 20px; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .form-select, .form-textarea {
+      width: 100%; padding: 9px 12px;
+      border: 1px solid var(--gray-200); border-radius: 7px;
+      font-size: 13.5px; color: var(--gray-800);
+      font-family: inherit; background: white;
+      transition: border-color 0.15s;
+    }
+    .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 32px; }
+    .form-select:focus, .form-textarea:focus { outline: 2px solid var(--indigo); outline-offset: 0; border-color: var(--indigo); }
+    .form-textarea { min-height: 200px; resize: vertical; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; }
+    .agent-preview { background: #f8faff; border: 1px solid #e0e7ff; border-radius: 7px; padding: 12px 14px; margin-top: 8px; }
+    .agent-preview-name { font-weight: 600; color: var(--gray-900); margin-bottom: 4px; }
+    .agent-preview-row { font-size: 12px; color: var(--gray-500); display: flex; gap: 6px; margin-top: 2px; }
+    .details-toggle { font-size: 13px; color: var(--indigo); cursor: pointer; display: flex; align-items: center; gap: 5px; border: none; background: none; padding: 0; font-family: inherit; }
+    .details-content { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--gray-100); display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .char-counter { font-size: 11px; color: var(--gray-400); text-align: right; margin-top: 4px; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+    .recent-runs-card { background: white; border: 1px solid var(--gray-200); border-radius: 10px; padding: 16px; }
+    .recent-runs-title { font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .recent-run-item { padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
+    .recent-run-item:last-child { border-bottom: none; }
+    .recent-run-name { font-size: 13px; font-weight: 500; color: var(--gray-800); }
+    .recent-run-meta { font-size: 12px; color: var(--gray-500); margin-top: 2px; display: flex; align-items: center; gap: 6px; }
+
+    /* ─── Audit Log ────────────────────────────────────── */
+    .audit-action { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--slate); }
+
+    /* ─── Tabs / Screen Nav ────────────────────────────── */
+    .screen-tabs {
+      display: flex; gap: 8px; margin-bottom: 28px;
+      border-bottom: 1px solid var(--gray-200);
+      padding-bottom: 0;
+    }
+    .screen-tab {
+      padding: 8px 16px; font-size: 13px; font-weight: 500;
+      color: var(--gray-500); cursor: pointer; border: none;
+      background: none; border-bottom: 2px solid transparent;
+      margin-bottom: -1px; white-space: nowrap;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .screen-tab:hover { color: var(--gray-800); }
+    .screen-tab.active { color: var(--indigo); border-bottom-color: var(--indigo); }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ─── Misc ─────────────────────────────────────────── */
+    .back-link { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; color: var(--gray-500); text-decoration: none; margin-bottom: 16px; }
+    .back-link:hover { color: var(--gray-800); }
+    .divider { height: 1px; background: var(--gray-100); margin: 16px 0; }
+    .row-action-btn { width: 28px; height: 28px; border-radius: 5px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: var(--gray-400); cursor: pointer; }
+    .row-action-btn:hover { background: var(--gray-100); color: var(--gray-700); }
+
+    .collapsible-trigger {
+      display: flex; align-items: center; gap: 6px;
+      cursor: pointer; font-size: 13px; font-weight: 500; color: var(--gray-700);
+      border: none; background: none; padding: 0; font-family: inherit;
+      margin-bottom: 10px;
+    }
+    .collapsible-trigger:hover { color: var(--gray-900); }
+    .input-preview-box {
+      background: var(--gray-50); border: 1px solid var(--gray-200);
+      border-radius: 7px; padding: 12px; font-size: 13px;
+      color: var(--gray-600); line-height: 1.6; font-style: italic;
+    }
+
+    /* Toast Demo */
+    .toast-stack { position: fixed; top: 70px; right: 20px; z-index: 200; display: flex; flex-direction: column; gap: 8px; }
+    .toast {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 16px; border-radius: 8px; min-width: 280px; max-width: 380px;
+      border: 1px solid; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      animation: slide-in 0.2s ease-out;
+    }
+    .toast-success { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+    .toast-error   { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+    .toast-info    { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+    .toast-icon { flex-shrink: 0; margin-top: 1px; }
+    .toast-body { flex: 1; }
+    .toast-title { font-weight: 600; }
+    .toast-msg { font-size: 12px; margin-top: 1px; opacity: 0.85; }
+    @keyframes slide-in { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* Prototype note */
+    .proto-note {
+      background: #fffbeb; border: 1px solid #fde68a;
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 20px;
+      font-size: 12.5px; color: #92400e;
+      display: flex; align-items: center; gap: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="topbar">
+  <a class="topbar-logo" href="#">
+    <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="6" fill="#0d1b2a"/>
+      <line x1="8" y1="22" x2="16" y2="14" stroke="#4f46e5" stroke-width="2" stroke-linecap="round"/>
+      <line x1="16" y1="14" x2="24" y2="7" stroke="#4f46e5" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="8" cy="22" r="3" fill="#818cf8"/>
+      <circle cx="16" cy="14" r="3" fill="#4f46e5"/>
+      <circle cx="24" cy="7" r="3.5" fill="white"/>
+    </svg>
+    Woodhouse
+  </a>
+  <div class="topbar-sep"></div>
+  <nav class="breadcrumb">
+    <a href="#">Dashboard</a>
+    <span class="sep">/</span>
+    <span class="current" id="breadcrumb-current">Workflows</span>
+  </nav>
+  <div class="topbar-right">
+    <div class="avatar" title="User account">JD</div>
+  </div>
+</div>
+
+<!-- App Body -->
+<div class="body">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Platform</div>
+      <a class="nav-item active" id="nav-workflows" onclick="showScreen('workflows')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+        Workflows
+      </a>
+      <a class="nav-item" id="nav-detail" onclick="showScreen('detail')" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Run Detail
+      </a>
+      <a class="nav-item" id="nav-agents" onclick="showScreen('agents')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h.01M15 9h.01M9 15h6"/></svg>
+        Agents
+      </a>
+      <a class="nav-item nav-cta" id="nav-run" onclick="showScreen('run')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor"/></svg>
+        Run Workflow
+      </a>
+      <a class="nav-item" id="nav-audit" onclick="showScreen('audit')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Audit Log
+      </a>
+    </div>
+    <div class="sidebar-bottom">
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M20 12h2M2 12h2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 20v2M12 2v2"/></svg>
+        Settings
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main">
+
+    <!-- ─── SCREEN 1: WORKFLOW LIST ─── -->
+    <div class="screen active" id="screen-workflows">
+      <div class="proto-note">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Prototype — click rows or "Run Workflow" to navigate between screens.
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-label">Workflows Today</div>
+          <div class="metric-value">42</div>
+          <div class="metric-delta delta-up">+12% vs yesterday</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Running Now</div>
+          <div class="metric-value">3</div>
+          <div class="metric-delta" style="color:var(--gray-400)">Live count</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Avg Duration</div>
+          <div class="metric-value">2m 14s</div>
+          <div class="metric-delta delta-up">-18s vs last week</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Total Cost Today</div>
+          <div class="metric-value">$18.42</div>
+          <div class="metric-delta delta-down">+$3.10 vs yesterday</div>
+        </div>
+      </div>
+
+      <div class="page-header">
+        <div>
+          <div class="page-title">Workflows</div>
+          <div class="page-subtitle">All agent workflow runs</div>
+        </div>
+        <button class="btn btn-primary" onclick="showScreen('run')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Run Workflow
+        </button>
+      </div>
+
+      <div class="filter-bar">
+        <select class="filter-select"><option>All Statuses</option><option>Running</option><option>Completed</option><option>Failed</option><option>Queued</option></select>
+        <select class="filter-select"><option>All Agents</option><option>LegalBot</option><option>HRAgent</option><option>ResearchAgent</option><option>FinBot</option></select>
+        <select class="filter-select"><option>Last 7 days</option><option>Today</option><option>Last 30 days</option><option>Custom range</option></select>
+        <div class="filter-spacer"></div>
+        <input class="search-input" type="text" placeholder="Search workflows…" />
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:36px"><input type="checkbox" class="cb" /></th>
+              <th>Name <span class="sort-icon">↕</span></th>
+              <th class="sorted">Status <span class="sort-icon">↕</span></th>
+              <th>Agent</th>
+              <th>Duration <span class="sort-icon">↕</span></th>
+              <th>Cost <span class="sort-icon">↕</span></th>
+              <th>Started <span class="sort-icon">↕</span></th>
+              <th style="width:40px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr onclick="showScreen('detail')">
+              <td><input type="checkbox" class="cb" onclick="event.stopPropagation()" /></td>
+              <td><strong style="color:var(--gray-900)">Contract Review — Smith NDA</strong></td>
+              <td><span class="badge badge-running"><span class="badge-dot"></span>Running</span></td>
+              <td>LegalBot</td>
+              <td class="mono">1m 24s</td>
+              <td class="mono">$0.12</td>
+              <td class="muted">2 min ago</td>
+              <td><button class="row-action-btn" onclick="event.stopPropagation()">⋯</button></td>
+            </tr>
+            <tr onclick="showScreen('detail')">
+              <td><input type="checkbox" class="cb" onclick="event.stopPropagation()" /></td>
+              <td><strong style="color:var(--gray-900)">Onboard — Sarah Smith</strong></td>
+              <td><span class="badge badge-done"><span class="badge-dot"></span>Completed</span></td>
+              <td>HRAgent</td>
+              <td class="mono">4m 12s</td>
+              <td class="mono">$0.43</td>
+              <td class="muted">1 hour ago</td>
+              <td><button class="row-action-btn" onclick="event.stopPropagation()">⋯</button></td>
+            </tr>
+            <tr onclick="showScreen('detail')">
+              <td><input type="checkbox" class="cb" onclick="event.stopPropagation()" /></td>
+              <td><strong style="color:var(--gray-900)">Q1 Market Intelligence Brief</strong></td>
+              <td><span class="badge badge-failed"><span class="badge-dot"></span>Failed</span></td>
+              <td>ResearchAgent</td>
+              <td class="mono">0m 32s</td>
+              <td class="mono">$0.05</td>
+              <td class="muted">3 hours ago</td>
+              <td><button class="row-action-btn" onclick="event.stopPropagation()">⋯</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" class="cb" /></td>
+              <td><strong style="color:var(--gray-900)">Invoice Processing — Batch #44</strong></td>
+              <td><span class="badge badge-queued"><span class="badge-dot"></span>Queued</span></td>
+              <td>FinBot</td>
+              <td class="muted">—</td>
+              <td class="muted">—</td>
+              <td class="muted">Just now</td>
+              <td><button class="row-action-btn">⋯</button></td>
+            </tr>
+            <tr onclick="showScreen('detail')">
+              <td><input type="checkbox" class="cb" onclick="event.stopPropagation()" /></td>
+              <td><strong style="color:var(--gray-900)">Weekly Compliance Report</strong></td>
+              <td><span class="badge badge-done"><span class="badge-dot"></span>Completed</span></td>
+              <td>LegalBot</td>
+              <td class="mono">6m 01s</td>
+              <td class="mono">$0.71</td>
+              <td class="muted">5 hours ago</td>
+              <td><button class="row-action-btn" onclick="event.stopPropagation()">⋯</button></td>
+            </tr>
+            <tr onclick="showScreen('detail')">
+              <td><input type="checkbox" class="cb" onclick="event.stopPropagation()" /></td>
+              <td><strong style="color:var(--gray-900)">Candidate Screening — 3 Applicants</strong></td>
+              <td><span class="badge badge-done"><span class="badge-dot"></span>Completed</span></td>
+              <td>HRAgent</td>
+              <td class="mono">3m 44s</td>
+              <td class="mono">$0.38</td>
+              <td class="muted">Yesterday</td>
+              <td><button class="row-action-btn" onclick="event.stopPropagation()">⋯</button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" class="cb" /></td>
+              <td><strong style="color:var(--gray-900)">Budget Variance Analysis — March</strong></td>
+              <td><span class="badge badge-cancelled"><span class="badge-dot"></span>Cancelled</span></td>
+              <td>FinBot</td>
+              <td class="mono">0m 08s</td>
+              <td class="mono">$0.01</td>
+              <td class="muted">Yesterday</td>
+              <td><button class="row-action-btn">⋯</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span>Showing 1–7 of 156 workflows</span>
+          <div class="pagination-pages">
+            <div class="page-btn">←</div>
+            <div class="page-btn active">1</div>
+            <div class="page-btn">2</div>
+            <div class="page-btn">3</div>
+            <div class="page-btn" style="color:var(--gray-300)">…</div>
+            <div class="page-btn">8</div>
+            <div class="page-btn">→</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── SCREEN 2: WORKFLOW DETAIL ─── -->
+    <div class="screen" id="screen-detail">
+      <a class="back-link" onclick="showScreen('workflows')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to Workflows
+      </a>
+
+      <div class="detail-header">
+        <div class="detail-title-row">
+          <span class="badge badge-running"><span class="badge-dot"></span>Running</span>
+          <div class="detail-title">Contract Review — Smith NDA</div>
+        </div>
+        <div class="detail-meta">
+          <div class="detail-meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+            Agent: <strong>LegalBot</strong>
+          </div>
+          <div class="detail-meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Started: <strong>2 min ago</strong>
+          </div>
+          <div class="detail-meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            Cost: <strong>$0.12</strong>
+          </div>
+          <div class="detail-meta-item" style="font-family:'JetBrains Mono',monospace;font-size:11.5px">
+            Run ID: <strong>wf-abc-123-xyz</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <!-- Step Trace -->
+        <div class="step-trace">
+          <div class="step-trace-title">Step Trace</div>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="step-icon-wrap">
+                <div class="step-icon done">✓</div>
+              </div>
+              <div class="step-content">
+                <div class="step-label">Fetch document</div>
+                <div class="step-time">0:00 — 0:12 · 12s</div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-icon-wrap">
+                <div class="step-icon done">✓</div>
+              </div>
+              <div class="step-content">
+                <div class="step-label">Classify document type</div>
+                <div class="step-time">0:12 — 0:31 · 19s</div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-icon-wrap">
+                <div class="step-icon active">●</div>
+              </div>
+              <div class="step-content">
+                <div class="step-label" style="color:var(--indigo);font-weight:600">Extract key clauses</div>
+                <div class="step-time">0:31 — now · 53s</div>
+                <div class="step-sub">
+                  <div class="step-sub-item">LLM call — 1,247 tokens</div>
+                  <div class="step-sub-item">Tool: search_db (clause_library)</div>
+                  <div class="step-sub-item" style="color:var(--warning)">Thinking…</div>
+                </div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-icon-wrap">
+                <div class="step-icon pending">○</div>
+              </div>
+              <div class="step-content">
+                <div class="step-label pending">Draft summary</div>
+                <div class="step-time" style="color:var(--gray-300)">Pending</div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-icon-wrap">
+                <div class="step-icon pending">○</div>
+              </div>
+              <div class="step-content">
+                <div class="step-label pending">Send to reviewer</div>
+                <div class="step-time" style="color:var(--gray-300)">Pending</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+          <button class="collapsible-trigger">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            Show input
+          </button>
+          <div class="input-preview-box">
+            "Please review the following NDA agreement between Woodhouse Agency and Smith & Partners Ltd. Flag any unusual clauses, identify missing standard protections, and summarise key obligations…"
+          </div>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="activity-feed">
+          <div class="feed-header">
+            <div class="feed-title">Live Activity Feed</div>
+            <div class="feed-controls">
+              <div class="feed-ws-dot"></div>
+              <div class="feed-ws-label">Connected</div>
+              <div class="feed-toggle">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg>
+                Auto-scroll
+              </div>
+            </div>
+          </div>
+          <div class="feed-body">
+            <div class="feed-line"><span class="feed-ts">14:23:01</span><span class="feed-info">Workflow started — agent: LegalBot</span></div>
+            <div class="feed-line"><span class="feed-ts">14:23:01</span><span class="feed-tool">tool_call read_file</span></div>
+            <div class="feed-line"><span class="feed-ts"></span><span class="feed-arg">→ path="/documents/incoming/smith-nda-draft.pdf"</span></div>
+            <div class="feed-line"><span class="feed-ts">14:23:02</span><span class="feed-info">tool_result: OK (42 pages, 18,432 tokens)</span></div>
+            <div class="feed-line"><span class="feed-ts">14:23:03</span><span class="feed-llm">llm_call claude-opus-4 [847 tokens → 312 tokens]</span></div>
+            <div class="feed-line"><span class="feed-ts"></span><span class="feed-arg">→ "Document classified: NDA — mutual, standard UK law template"</span></div>
+            <div class="feed-line"><span class="feed-ts">14:23:06</span><span class="feed-llm">llm_call claude-opus-4 [12,847 tokens → 2,103 tokens]</span></div>
+            <div class="feed-line"><span class="feed-ts"></span><span class="feed-arg">→ "Identified 14 clauses for review. Beginning extraction…"</span></div>
+            <div class="feed-line"><span class="feed-ts">14:23:08</span><span class="feed-tool">tool_call search_db</span></div>
+            <div class="feed-line"><span class="feed-ts"></span><span class="feed-arg">→ table="clause_library" WHERE type='NDA' AND jurisdiction='UK'</span></div>
+            <div class="feed-line"><span class="feed-ts">14:23:08</span><span class="feed-info">tool_result: 47 reference clauses returned</span></div>
+            <div class="feed-line"><span class="feed-ts">14:23:09</span><span class="feed-llm">llm_call claude-opus-4 [15,204 tokens → …]</span></div>
+            <div class="feed-line"><span class="feed-ts"></span><span class="feed-arg">→ "Comparing extracted clauses against standard templates…"</span></div>
+            <div class="feed-line"><span class="feed-ts">14:23:14</span><span class="feed-thinking">● Agent reasoning…</span></div>
+            <div class="feed-line"><span class="feed-ts">14:23:24</span><span class="feed-llm">llm_call claude-opus-4 [18,422 tokens → …]</span></div>
+            <div class="feed-line"><span class="feed-ts"></span><span class="feed-arg">→ "Found 3 non-standard clauses: §4.2 (liability cap), §7.1 (IP assignment), §11 (governing law)"</span></div>
+            <div class="feed-line"><span class="feed-ts">14:23:31</span><span class="feed-thinking">● Agent reasoning…</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── SCREEN 3: AGENT LIBRARY ─── -->
+    <div class="screen" id="screen-agents">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Agent Library</div>
+          <div class="page-subtitle">Configured agents and their capabilities</div>
+        </div>
+        <button class="btn btn-outline">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Configure Agent
+        </button>
+      </div>
+
+      <div class="filter-bar">
+        <input class="search-input" type="text" placeholder="Search agents…" />
+        <select class="filter-select"><option>All Roles</option><option>Legal</option><option>HR</option><option>Finance</option><option>Research</option></select>
+        <select class="filter-select"><option>All Models</option><option>claude-opus-4</option><option>claude-sonnet-4</option><option>gpt-4o</option></select>
+        <select class="filter-select"><option>All Statuses</option><option>Active</option><option>Inactive</option></select>
+      </div>
+
+      <div class="agent-grid">
+        <div class="agent-card">
+          <div class="agent-card-head">
+            <div>
+              <div class="agent-name">LegalBot</div>
+              <div class="agent-role">Legal Document Reviewer</div>
+            </div>
+            <span class="badge badge-active"><span class="badge-dot" style="background:var(--success)"></span>Active</span>
+          </div>
+          <div class="agent-meta">
+            <span class="badge badge-model">claude-opus-4</span>
+          </div>
+          <div class="agent-meta" style="margin-top:8px">
+            <span class="tool-chip">read_file</span>
+            <span class="tool-chip">search_db</span>
+            <span class="tool-chip">web_search</span>
+            <span class="tool-chip">write_file</span>
+          </div>
+          <div class="agent-card-footer">
+            <button class="btn btn-outline btn-sm">View details</button>
+          </div>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-card-head">
+            <div>
+              <div class="agent-name">HRAgent</div>
+              <div class="agent-role">HR Operations Coordinator</div>
+            </div>
+            <span class="badge badge-active"><span class="badge-dot" style="background:var(--success)"></span>Active</span>
+          </div>
+          <div class="agent-meta">
+            <span class="badge badge-model">claude-sonnet-4</span>
+          </div>
+          <div class="agent-meta" style="margin-top:8px">
+            <span class="tool-chip">send_email</span>
+            <span class="tool-chip">read_file</span>
+            <span class="tool-chip">calendar</span>
+            <span class="tool-chip">slack</span>
+            <span class="tool-chip">write_file</span>
+          </div>
+          <div class="agent-card-footer">
+            <button class="btn btn-outline btn-sm">View details</button>
+          </div>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-card-head">
+            <div>
+              <div class="agent-name">ResearchAgent</div>
+              <div class="agent-role">Market Research Analyst</div>
+            </div>
+            <span class="badge badge-active"><span class="badge-dot" style="background:var(--success)"></span>Active</span>
+          </div>
+          <div class="agent-meta">
+            <span class="badge badge-model">claude-opus-4</span>
+          </div>
+          <div class="agent-meta" style="margin-top:8px">
+            <span class="tool-chip">web_search</span>
+            <span class="tool-chip">browse</span>
+            <span class="tool-chip">write_file</span>
+            <span class="tool-chip">read_file</span>
+          </div>
+          <div class="agent-card-footer">
+            <button class="btn btn-outline btn-sm">View details</button>
+          </div>
+        </div>
+
+        <div class="agent-card">
+          <div class="agent-card-head">
+            <div>
+              <div class="agent-name">FinBot</div>
+              <div class="agent-role">Financial Data Processor</div>
+            </div>
+            <span class="badge badge-active"><span class="badge-dot" style="background:var(--success)"></span>Active</span>
+          </div>
+          <div class="agent-meta">
+            <span class="badge badge-model">claude-sonnet-4</span>
+          </div>
+          <div class="agent-meta" style="margin-top:8px">
+            <span class="tool-chip">read_file</span>
+            <span class="tool-chip">parse_csv</span>
+            <span class="tool-chip">query_db</span>
+            <span class="tool-chip">write_file</span>
+          </div>
+          <div class="agent-card-footer">
+            <button class="btn btn-outline btn-sm">View details</button>
+          </div>
+        </div>
+
+        <div class="agent-card" style="border-style:dashed;background:var(--gray-50);cursor:pointer" onclick="">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:160px;color:var(--gray-400);gap:8px">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <div style="font-size:13px;font-weight:500">Configure new agent</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── SCREEN 4: RUN WORKFLOW ─── -->
+    <div class="screen" id="screen-run">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Run a Workflow</div>
+          <div class="page-subtitle">Select an agent and provide your input</div>
+        </div>
+      </div>
+
+      <div class="run-grid">
+        <div>
+          <div class="card">
+            <div class="form-group">
+              <label class="form-label">Select Agent</label>
+              <select class="form-select">
+                <option>LegalBot — Legal Document Reviewer</option>
+                <option>HRAgent — HR Operations Coordinator</option>
+                <option>ResearchAgent — Market Research Analyst</option>
+                <option>FinBot — Financial Data Processor</option>
+              </select>
+              <div class="agent-preview">
+                <div class="agent-preview-name">LegalBot</div>
+                <div class="agent-preview-row">
+                  <span>Role: Legal Document Reviewer</span>
+                  <span>·</span>
+                  <span class="badge badge-model" style="padding:1px 6px">claude-opus-4</span>
+                </div>
+                <div class="agent-preview-row" style="margin-top:4px">
+                  <span>Tools: read_file, search_db, web_search, write_file</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Input</label>
+              <textarea class="form-textarea" placeholder="Paste your input here…
+
+Example: 'Please review the attached NDA agreement between Woodhouse Agency and Smith & Partners. Flag any unusual clauses, identify missing standard protections, and summarise key obligations in plain English.'
+
+Supports plain text and structured data."></textarea>
+              <div class="char-counter">0 / 100,000 characters</div>
+            </div>
+
+            <details>
+              <summary class="details-toggle">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                Advanced Options
+              </summary>
+              <div class="details-content">
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Timeout</label>
+                  <select class="form-select">
+                    <option>15 minutes</option>
+                    <option selected>30 minutes</option>
+                    <option>1 hour</option>
+                    <option>Custom</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Priority</label>
+                  <select class="form-select">
+                    <option>Low</option>
+                    <option selected>Normal</option>
+                    <option>High</option>
+                    <option>Critical</option>
+                  </select>
+                </div>
+              </div>
+            </details>
+
+            <div class="form-actions">
+              <button class="btn btn-outline" onclick="showScreen('workflows')">Cancel</button>
+              <button class="btn btn-primary" onclick="showToastAndNavigate()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/></svg>
+                Run Workflow
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="recent-runs-card">
+          <div class="recent-runs-title">Recent Runs</div>
+          <div class="recent-run-item">
+            <div class="recent-run-name">Contract Review — Smith NDA</div>
+            <div class="recent-run-meta">
+              <span class="badge badge-running" style="font-size:11px;padding:2px 6px"><span class="badge-dot"></span>Running</span>
+              <span>LegalBot · 2 min ago</span>
+            </div>
+          </div>
+          <div class="recent-run-item">
+            <div class="recent-run-name">Onboard — Sarah Smith</div>
+            <div class="recent-run-meta">
+              <span class="badge badge-done" style="font-size:11px;padding:2px 6px"><span class="badge-dot"></span>Done</span>
+              <span>HRAgent · 1h ago</span>
+            </div>
+          </div>
+          <div class="recent-run-item">
+            <div class="recent-run-name">Q1 Market Intelligence Brief</div>
+            <div class="recent-run-meta">
+              <span class="badge badge-failed" style="font-size:11px;padding:2px 6px"><span class="badge-dot"></span>Failed</span>
+              <span>ResearchAgent · 3h ago</span>
+            </div>
+          </div>
+          <div class="recent-run-item">
+            <div class="recent-run-name">Weekly Compliance Report</div>
+            <div class="recent-run-meta">
+              <span class="badge badge-done" style="font-size:11px;padding:2px 6px"><span class="badge-dot"></span>Done</span>
+              <span>LegalBot · 5h ago</span>
+            </div>
+          </div>
+          <div class="recent-run-item">
+            <div class="recent-run-name">Candidate Screening — 3 Applicants</div>
+            <div class="recent-run-meta">
+              <span class="badge badge-done" style="font-size:11px;padding:2px 6px"><span class="badge-dot"></span>Done</span>
+              <span>HRAgent · Yesterday</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── SCREEN 5: AUDIT LOG ─── -->
+    <div class="screen" id="screen-audit">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Audit Log</div>
+          <div class="page-subtitle">Complete record of all agent actions</div>
+        </div>
+        <button class="btn btn-outline">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+      </div>
+
+      <div class="filter-bar">
+        <input class="search-input" type="text" placeholder="Search audit log…" />
+        <select class="filter-select"><option>All Agents</option><option>LegalBot</option><option>HRAgent</option><option>ResearchAgent</option><option>FinBot</option></select>
+        <select class="filter-select"><option>All Actions</option><option>tool_call</option><option>llm_inference</option><option>workflow_start</option><option>workflow_end</option></select>
+        <select class="filter-select"><option>All Results</option><option>OK</option><option>Error</option></select>
+        <select class="filter-select"><option>Last 7 days</option><option>Today</option><option>Last 30 days</option></select>
+        <button class="btn btn-ghost btn-sm">Clear filters</button>
+      </div>
+
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp <span class="sort-icon sorted">↓</span></th>
+              <th>Agent</th>
+              <th>Action <span class="sort-icon">↕</span></th>
+              <th>Workflow</th>
+              <th>Tokens</th>
+              <th>Cost</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mono" style="color:var(--gray-500);font-size:12px">2026-03-27 14:23:31</td>
+              <td>LegalBot</td>
+              <td><span class="audit-action">llm:inference</span></td>
+              <td class="mono" style="font-size:12px;color:var(--indigo)">WF-1042</td>
+              <td class="mono">18,422</td>
+              <td class="mono">$0.092</td>
+              <td><span class="badge badge-done" style="font-size:11px;padding:2px 6px">✓ OK</span></td>
+            </tr>
+            <tr>
+              <td class="mono" style="color:var(--gray-500);font-size:12px">2026-03-27 14:23:08</td>
+              <td>LegalBot</td>
+              <td><span class="audit-action">tool:search_db</span></td>
+              <td class="mono" style="font-size:12px;color:var(--indigo)">WF-1042</td>
+              <td class="muted">—</td>
+              <td class="mono">$0.001</td>
+              <td><span class="badge badge-done" style="font-size:11px;padding:2px 6px">✓ OK</span></td>
+            </tr>
+            <tr>
+              <td class="mono" style="color:var(--gray-500);font-size:12px">2026-03-27 14:23:06</td>
+              <td>LegalBot</td>
+              <td><span class="audit-action">llm:inference</span></td>
+              <td class="mono" style="font-size:12px;color:var(--indigo)">WF-1042</td>
+              <td class="mono">12,847</td>
+              <td class="mono">$0.028</td>
+              <td><span class="badge badge-done" style="font-size:11px;padding:2px 6px">✓ OK</span></td>
+            </tr>
+            <tr>
+              <td class="mono" style="color:var(--gray-500);font-size:12px">2026-03-27 14:23:01</td>
+              <td>LegalBot</td>
+              <td><span class="audit-action">tool:read_file</span></td>
+              <td class="mono" style="font-size:12px;color:var(--indigo)">WF-1042</td>
+              <td class="muted">—</td>
+              <td class="mono">$0.000</td>
+              <td><span class="badge badge-done" style="font-size:11px;padding:2px 6px">✓ OK</span></td>
+            </tr>
+            <tr>
+              <td class="mono" style="color:var(--gray-500);font-size:12px">2026-03-27 12:15:44</td>
+              <td>HRAgent</td>
+              <td><span class="audit-action">tool:send_email</span></td>
+              <td class="mono" style="font-size:12px;color:var(--indigo)">WF-1038</td>
+              <td class="muted">—</td>
+              <td class="mono">$0.000</td>
+              <td><span class="badge badge-done" style="font-size:11px;padding:2px 6px">✓ OK</span></td>
+            </tr>
+            <tr>
+              <td class="mono" style="color:var(--gray-500);font-size:12px">2026-03-27 11:05:22</td>
+              <td>ResearchAgent</td>
+              <td><span class="audit-action">tool:web_search</span></td>
+              <td class="mono" style="font-size:12px;color:var(--indigo)">WF-1035</td>
+              <td class="muted">—</td>
+              <td class="mono">$0.000</td>
+              <td><span class="badge badge-failed" style="font-size:11px;padding:2px 6px">✗ Error</span></td>
+            </tr>
+            <tr>
+              <td class="mono" style="color:var(--gray-500);font-size:12px">2026-03-27 09:41:07</td>
+              <td>FinBot</td>
+              <td><span class="audit-action">tool:parse_csv</span></td>
+              <td class="mono" style="font-size:12px;color:var(--indigo)">WF-1031</td>
+              <td class="muted">—</td>
+              <td class="mono">$0.000</td>
+              <td><span class="badge badge-done" style="font-size:11px;padding:2px 6px">✓ OK</span></td>
+            </tr>
+            <tr>
+              <td class="mono" style="color:var(--gray-500);font-size:12px">2026-03-27 09:40:58</td>
+              <td>FinBot</td>
+              <td><span class="audit-action">workflow:start</span></td>
+              <td class="mono" style="font-size:12px;color:var(--indigo)">WF-1031</td>
+              <td class="muted">—</td>
+              <td class="muted">—</td>
+              <td><span class="badge badge-done" style="font-size:11px;padding:2px 6px">✓ OK</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination">
+          <span>Showing 1–8 of 1,247 events</span>
+          <div class="pagination-pages">
+            <div class="page-btn">←</div>
+            <div class="page-btn active">1</div>
+            <div class="page-btn">2</div>
+            <div class="page-btn">3</div>
+            <div class="page-btn" style="color:var(--gray-300)">…</div>
+            <div class="page-btn">156</div>
+            <div class="page-btn">→</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Toast Stack -->
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+  const screens = ['workflows', 'detail', 'agents', 'run', 'audit'];
+  const breadcrumbs = {
+    workflows: 'Workflows',
+    detail: 'Workflows / Contract Review — Smith NDA',
+    agents: 'Agents',
+    run: 'Run Workflow',
+    audit: 'Audit Log'
+  };
+  const navMap = {
+    workflows: 'nav-workflows',
+    detail: 'nav-detail',
+    agents: 'nav-agents',
+    run: 'nav-run',
+    audit: 'nav-audit'
+  };
+
+  function showScreen(name) {
+    screens.forEach(s => {
+      document.getElementById('screen-' + s).classList.remove('active');
+      const nav = document.getElementById('nav-' + s);
+      if (nav) nav.classList.remove('active');
+    });
+    document.getElementById('screen-' + name).classList.add('active');
+    const activeNav = document.getElementById('nav-' + name);
+    if (activeNav) activeNav.classList.add('active');
+    document.getElementById('breadcrumb-current').textContent = breadcrumbs[name] || name;
+
+    // Show/hide detail nav item
+    const detailNav = document.getElementById('nav-detail');
+    detailNav.style.display = (name === 'detail') ? 'flex' : 'none';
+  }
+
+  function showToast(type, title, msg) {
+    const icons = {
+      success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+      error: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+      info: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+    };
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `<div class="toast-icon">${icons[type]}</div><div class="toast-body"><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>`;
+    document.getElementById('toast-stack').appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 4000);
+  }
+
+  function showToastAndNavigate() {
+    showToast('success', 'Workflow started', 'LegalBot is processing your input — redirecting to run detail.');
+    setTimeout(() => showScreen('detail'), 800);
+  }
+
+  // Init
+  showScreen('workflows');
+</script>
+</body>
+</html>
