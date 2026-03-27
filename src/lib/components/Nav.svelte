@@ -9,6 +9,14 @@
 		{ href: '/partners', label: 'Partners' }
 	];
 
+	const tools = [
+		{ href: '/tools/ai-readiness', label: 'AI Readiness Assessment' },
+		{ href: '/tools/roi-calculator', label: 'ROI Calculator' },
+		{ href: '/tools/book', label: 'Book a Call' }
+	];
+
+	let toolsOpen = $state(false);
+
 	let mobileOpen = $state(false);
 </script>
 
@@ -43,6 +51,38 @@
 					</a>
 				</li>
 			{/each}
+			<!-- Tools dropdown -->
+			<li class="relative">
+				<button
+					onclick={() => (toolsOpen = !toolsOpen)}
+					class="text-sm font-medium transition-colors flex items-center gap-1 {page.url.pathname.startsWith('/tools')
+						? 'text-brand-600'
+						: 'text-gray-600 hover:text-gray-900'}"
+				>
+					Tools
+					<svg class="w-3 h-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+					</svg>
+				</button>
+				{#if toolsOpen}
+					<div
+						role="menu"
+						tabindex="-1"
+						class="absolute top-full left-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50"
+						onmouseleave={() => (toolsOpen = false)}
+					>
+						{#each tools as tool}
+							<a
+								href={tool.href}
+								onclick={() => (toolsOpen = false)}
+								class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-600 transition-colors"
+							>
+								{tool.label}
+							</a>
+						{/each}
+					</div>
+				{/if}
+			</li>
 		</ul>
 
 		<a
@@ -83,6 +123,18 @@
 						</a>
 					</li>
 				{/each}
+				<li class="border-t border-gray-100 pt-3 mt-1">
+					<p class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Tools</p>
+					{#each tools as tool}
+						<a
+							href={tool.href}
+							onclick={() => (mobileOpen = false)}
+							class="block text-sm font-medium text-gray-700 hover:text-brand-600 py-1"
+						>
+							{tool.label}
+						</a>
+					{/each}
+				</li>
 				<li class="pt-2">
 					<a
 						href="/lp/get-started"

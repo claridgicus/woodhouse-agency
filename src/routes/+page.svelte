@@ -154,6 +154,36 @@
 </section>
 {/if}
 
+<!-- Lead gen tools -->
+<section class="max-w-6xl mx-auto px-4 sm:px-6 py-24">
+	<div class="text-center mb-12">
+		<h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Free tools to get you started</h2>
+		<p class="text-gray-500 max-w-xl mx-auto">
+			Not ready to talk yet? Use our free interactive tools to benchmark your readiness and model your ROI.
+		</p>
+	</div>
+	<div class="grid md:grid-cols-3 gap-6">
+		<a href="/tools/ai-readiness" class="block p-8 rounded-2xl border border-gray-200 hover:border-brand-300 hover:shadow-lg transition-all group">
+			<div class="text-4xl mb-4">📋</div>
+			<h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-brand-600 transition-colors">AI Readiness Assessment</h3>
+			<p class="text-gray-500 text-sm leading-relaxed">20 questions. Score your organisation's AI readiness across 5 dimensions and get a personalised PDF report.</p>
+			<p class="mt-4 text-sm font-semibold text-brand-600">Take the assessment →</p>
+		</a>
+		<a href="/tools/roi-calculator" class="block p-8 rounded-2xl border border-gray-200 hover:border-brand-300 hover:shadow-lg transition-all group">
+			<div class="text-4xl mb-4">📊</div>
+			<h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-brand-600 transition-colors">ROI Calculator</h3>
+			<p class="text-gray-500 text-sm leading-relaxed">Model your 3-year return on AI agent deployment. Adjust headcount, salary, and automation rate to see your payback period.</p>
+			<p class="mt-4 text-sm font-semibold text-brand-600">Calculate your ROI →</p>
+		</a>
+		<a href="/tools/book" class="block p-8 rounded-2xl border border-gray-200 hover:border-brand-300 hover:shadow-lg transition-all group">
+			<div class="text-4xl mb-4">📅</div>
+			<h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-brand-600 transition-colors">Book a Discovery Call</h3>
+			<p class="text-gray-500 text-sm leading-relaxed">30 minutes with our team. We'll identify your top 3 agent-ready workflows and share a no-obligation roadmap.</p>
+			<p class="mt-4 text-sm font-semibold text-brand-600">Book your slot →</p>
+		</a>
+	</div>
+</section>
+
 <!-- CTA -->
 <section class="bg-brand-900 text-white py-24">
 	<div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
@@ -161,8 +191,13 @@
 		<p class="text-brand-200 mb-10 text-lg">
 			We work with enterprises of 50+ knowledge workers. If that's you, let's talk.
 		</p>
-		<a href="/lp/get-started" class="px-10 py-4 bg-white text-brand-800 font-bold rounded-xl hover:bg-brand-50 transition-colors inline-block">
-			Book a Free Assessment
-		</a>
+		<div class="flex flex-col sm:flex-row gap-4 justify-center">
+			<a href="/tools/book" class="px-10 py-4 bg-white text-brand-800 font-bold rounded-xl hover:bg-brand-50 transition-colors inline-block">
+				Book a Free Discovery Call
+			</a>
+			<a href="/tools/ai-readiness" class="px-10 py-4 border border-brand-400 text-white font-semibold rounded-xl hover:bg-brand-800 transition-colors inline-block">
+				Take the AI Assessment
+			</a>
+		</div>
 	</div>
 </section>

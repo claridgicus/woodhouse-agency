@@ -78,8 +78,13 @@
 		<p class="text-brand-200 mb-8 max-w-lg mx-auto">
 			Most clients begin with a Strategy engagement. It gives you the data to make the right build decision — and pays for itself in the first deployment.
 		</p>
-		<a href="/lp/get-started" class="px-8 py-4 bg-white text-brand-800 font-bold rounded-xl hover:bg-brand-50 transition-colors inline-block">
-			Book a Free Assessment
-		</a>
+		<div class="flex flex-col sm:flex-row gap-4 justify-center">
+			<a href="/tools/book" class="px-8 py-4 bg-white text-brand-800 font-bold rounded-xl hover:bg-brand-50 transition-colors inline-block">
+				Book a Free Discovery Call
+			</a>
+			<a href="/tools/roi-calculator" class="px-8 py-4 border border-brand-400 text-white font-semibold rounded-xl hover:bg-brand-800 transition-colors inline-block">
+				Calculate Your ROI →
+			</a>
+		</div>
 	</div>
 </div>

@@ -23,12 +23,13 @@
 		</div>
 
 		<div>
-			<p class="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Resources</p>
+			<p class="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Tools</p>
 			<ul class="space-y-2 text-sm">
+				<li><a href="/tools/ai-readiness" class="hover:text-white transition-colors">AI Readiness Assessment</a></li>
+				<li><a href="/tools/roi-calculator" class="hover:text-white transition-colors">ROI Calculator</a></li>
+				<li><a href="/tools/book" class="hover:text-white transition-colors">Book a Discovery Call</a></li>
 				<li><a href="/case-studies" class="hover:text-white transition-colors">Case Studies</a></li>
-				<li><a href="/lp/roi-calculator" class="hover:text-white transition-colors">ROI Calculator</a></li>
-				<li><a href="/lp/get-started" class="hover:text-white transition-colors">Get Started</a></li>
-				</ul>
+			</ul>
 		</div>
 	</div>
 
